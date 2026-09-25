@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Gerador de senhas seguras desenvolvido com HTML, CSS e JavaScript."
+    >
+
+    <title>SecureKey | Gerador de Senhas</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --background: #070b14;
+            --card: rgba(15, 23, 42, 0.88);
+            --card-light: #111827;
+            --primary: #38bdf8;
+            --primary-dark: #0284c7;
+            --secondary: #8b5cf6;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.15);
+            --success: #22c55e;
+            --warning: #f59e0b;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(
+                    circle at 20% 20%,
+                    rgba(56, 189, 248, 0.12),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 80% 80%,
+                    rgba(139, 92, 246, 0.12),
+                    transparent 30%
+                ),
+                var(--background);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 30px 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 620px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 18px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-size: 32px;
+
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                var(--secondary)
+            );
+
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(56, 189, 248, 0.2);
+        }
+
+        .header h1 {
+            font-size: 34px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 span {
+            color: var(--primary);
+        }
+
+        .header p {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px;
+
+            backdrop-filter: blur(15px);
+
+            box-shadow:
+                0 25px 80px rgba(0, 0, 0, 0.35);
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            height: 55px;
+
+            padding: 0 55px 0 18px;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            background: #080d18;
+            color: white;
+
+            font-size: 17px;
+            outline: none;
+
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 0 3px rgba(56, 189, 248, 0.1);
+        }
+
+        .toggle-password {
+            position: absolute;
+
+            right: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: none;
+            background: transparent;
+
+            color: var(--muted);
+
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .counter {
+            display: flex;
+            justify-content: space-between;
+
+            margin-top: 8px;
+
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .generate-button {
+            width: 100%;
+            height: 55px;
+
+            margin-top: 22px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                var(--secondary)
+            );
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .generate-button:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 12px 30px rgba(56, 189, 248, 0.2);
+        }
+
+        .result {
+            display: none;
+
+            margin-top: 25px;
+            padding-top: 25px;
+
+            border-top: 1px solid var(--border);
+        }
+
+        .result.show {
+            display: block;
+            animation: appear 0.4s ease;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 10px;
+        }
+
+        .result-header span {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .copy-button {
+            border: none;
+            background: transparent;
+
+            color: var(--primary);
+
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .password-box {
+            min-height: 70px;
+
+            padding: 18px;
+
+            display: flex;
+            align-items: center;
+
+            background: #080d18;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            color: var(--primary);
+
+            font-family: monospace;
+            font-size: 18px;
+
+            word-break: break-all;
+        }
+
+        .strength {
+            margin-top: 18px;
+        }
+
+        .strength-top {
+            display: flex;
+            justify-content: space-between;
+
+            margin-bottom: 8px;
+
+            font-size: 13px;
+        }
+
+        .strength-top span:last-child {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .strength-bar {
+            width: 100%;
+            height: 7px;
+
+            background: #1e293b;
+
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .strength-progress {
+            width: 100%;
+            height: 100%;
+
+            background: linear-gradient(
+                90deg,
+                var(--success),
+                #06b6d4
+            );
+
+            border-radius: 10px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+
+            margin-top: 25px;
+        }
+
+        .feature {
+            padding: 15px;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .feature strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .feature span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .footer {
+            text-align: center;
+
+            margin-top: 20px;
+
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 500px) {
+            .card {
+                padding: 22px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <header class="header">
+
+            <div class="logo">
+                🔐
+            </div>
+
+            <h1>
+                Secure<span>Key</span>
+            </h1>
+
+            <p>
+                Transforme uma senha numérica em uma senha
+                mais complexa e aleatória.
+            </p>
+
+        </header>
+
+        <section class="card">
+
+            <h2 class="section-title">
+                Sua senha
+            </h2>
+
+            <p class="description">
+                Digite uma senha numérica de até 20 caracteres.
+                Ela será utilizada como base para gerar uma nova senha.
+            </p>
+
+            <div class="input-container">
+
+                <input
+                    type="password"
+                    id="senha"
+                    maxlength="20"
+                    inputmode="numeric"
+                    placeholder="Digite até 20 números"
+                >
+
+                <button
+                    class="toggle-password"
+                    id="togglePassword"
+                    title="Mostrar senha"
+                >
+                    👁
+                </button>
+
+            </div>
+
+            <div class="counter">
+                <span>Somente números</span>
+                <span id="contador">0 / 20</span>
+            </div>
+
+            <button
+                class="generate-button"
+                id="generateButton"
+            >
+                🛡️ Gerar senha segura
+            </button>
+
+            <div
+                class="result"
+                id="result"
+            >
+
+                <div class="result-header">
+
+                    <span>
+                        Sua nova senha
+                    </span>
+
+                    <button
+                        class="copy-button"
+                        id="copyButton"
+                    >
+                        📋 Copiar
+                    </button>
+
+                </div>
+
+                <div
+                    class="password-box"
+                    id="passwordResult"
+                ></div>
+
+                <div class="strength">
+
+                    <div class="strength-top">
+
+                        <span>
+                            Nível de segurança
+                        </span>
+
+                        <span>
+                            MUITO FORTE
+                        </span>
+
+                    </div>
+
+                    <div class="strength-bar">
+
+                        <div
+                            class="strength-progress"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="features">
+
+                <div class="feature">
+                    <strong>🔢 Até 20 caracteres</strong>
+                    <span>
+                        Entrada numérica limitada.
+                    </span>
+                </div>
+
+                <div class="feature">
+                    <strong>🎲 Aleatoriedade</strong>
+                    <span>
+                        Caracteres gerados aleatoriamente.
+                    </span>
+                </div>
+
+                <div class="feature">
+                    <strong>🔒 Processamento local</strong>
+                    <span>
+                        Nada é enviado para servidores.
+                    </span>
+                </div>
+
+                <div class="feature">
+                    <strong>⚡ Rápido</strong>
+                    <span>
+                        Resultado gerado no navegador.
+                    </span>
+                </div>
+
+            </div>
+
+        </section>
+
+        <footer class="footer">
+            Projeto educacional • HTML + CSS + JavaScript
+        </footer>
+
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
